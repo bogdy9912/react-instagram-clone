@@ -2,25 +2,24 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
+import { Provider } from "react-redux";
+import store from "./redux/store.tsx";
+import "./firebase.ts";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import SignUpPage from "./presentation/auth/SignUpPage.tsx";
 
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_API_KEY ?? "",
-  authDomain: import.meta.env.VITE_AUTH_DOMAIN ?? "",
-  projectId: import.meta.env.VITE_PROJECT_ID ?? "",
-  storageBucket: import.meta.env.VITE_STORAGE_BUCKET ?? "",
-  messagingSenderId: import.meta.env.VITE_MESSAGING_SENDER_ID ?? "",
-  appId: import.meta.env.VITE_APP_ID ?? "",
-  measurementId: import.meta.env.VITE_MEASUREMENT_ID ?? "",
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <SignUpPage/>
+  }
+]);
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <App />
+    <Provider store={store}>
+      <RouterProvider router={router} />
+      {/* <App /> */}
+    </Provider>
   </StrictMode>
 );
