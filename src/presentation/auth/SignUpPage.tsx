@@ -2,7 +2,14 @@ import { FormEvent, useState } from "react";
 import { authActions } from "../../slices/authSlice";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { Link, useNavigate } from "react-router-dom";
-import { Box, Button, Paper, Stack, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import { profileActions } from "../../slices/profileSlice";
 
@@ -59,13 +66,7 @@ const SignUpPage = () => {
 
   return (
     <>
-      <Stack
-        direction="row"
-        justifyContent="center"
-        alignItems="center"
-        height="100vh"
-        width="100vw"
-      >
+      <form onSubmit={handleSubmit}>
         <Paper
           elevation={4}
           sx={{
@@ -73,7 +74,7 @@ const SignUpPage = () => {
             width: "300px",
           }}
         >
-          <form onSubmit={handleSubmit}>
+          <Stack direction={"column"}>
             <Typography align="center" variant="h3">
               Instagram
             </Typography>
@@ -81,120 +82,122 @@ const SignUpPage = () => {
               Sign up to see photos and videos from your friends
             </Typography>
 
-            <Stack direction={"column"}>
-              <TextField
-                variant="outlined"
-                label="Email"
-                placeholder="your_email@gmail.com"
-                required
-                name="email"
-                type="email"
-                error={errorAuthEmail !== null}
-                helperText={
-                  <>
-                    {errorAuthEmail !== null && (
-                      <Typography component={"span"}>
-                        {errorAuthEmail.message}
-                      </Typography>
-                    )}
-                  </>
-                }
-              />
-              <Box sx={{ height: "16px" }} />
-              <TextField
-                onFocus={() => setFocus(true)}
-                variant="outlined"
-                label="Password"
-                placeholder="**********"
-                type="password"
-                required
-                name="password"
-                helperText={
-                  <>
-                    {!isErrorAuth && focus && (
-                      <>
-                        {passRules.map((e) => (
-                          <Typography
-                            key={e}
-                            component={"span"}
-                            variant="body2"
-                            sx={{ display: "block" }}
-                          >
-                            {e}
-                          </Typography>
-                        ))}
-                      </>
-                    )}
-                    {isErrorAuth && (
-                      <Typography component={"span"}>
-                        {errorAuthPass?.message.substring(10, 50)}
-                      </Typography>
-                    )}
-                  </>
-                }
-                error={errorAuthPass !== null}
-              />
-              <Box sx={{ height: "16px" }} />
-              <TextField
-                variant="outlined"
-                label="Confirm password"
-                placeholder="**********"
-                type="password"
-                required
-                name="confirmPassword"
-                error={errorAuthPassConfirm !== null}
-                helperText={
-                  <>
-                    {errorAuthPassConfirm !== null && (
-                      <Typography component={"span"}>
-                        {errorAuthPassConfirm.message}
-                      </Typography>
-                    )}
-                  </>
-                }
-              />
-              <Box sx={{ height: "16px" }} />
-              <TextField
-                variant="outlined"
-                label="Username"
-                type="text"
-                required
-                name="username"
-                helperText=""
-              />
-              <Box sx={{ height: "16px" }} />
-              <TextField
-                variant="outlined"
-                label="Display name"
-                type="text"
-                required
-                name="displayName"
-                helperText=""
-              />
-              <Box sx={{ height: 32 }}></Box>
+            <TextField
+              variant="outlined"
+              label="Email"
+              placeholder="your_email@gmail.com"
+              required
+              name="email"
+              type="email"
+              error={errorAuthEmail !== null}
+              helperText={
+                <>
+                  {errorAuthEmail !== null && (
+                    <Typography component={"span"}>
+                      {errorAuthEmail.message}
+                    </Typography>
+                  )}
+                </>
+              }
+            />
+            <Box sx={{ height: "16px" }} />
+            <TextField
+              onFocus={() => setFocus(true)}
+              variant="outlined"
+              label="Password"
+              placeholder="**********"
+              type="password"
+              required
+              name="password"
+              helperText={
+                <>
+                  {!isErrorAuth && focus && (
+                    <>
+                      {passRules.map((e) => (
+                        <Typography
+                          key={e}
+                          component={"span"}
+                          variant="body2"
+                          sx={{ display: "block" }}
+                        >
+                          {e}
+                        </Typography>
+                      ))}
+                    </>
+                  )}
+                  {isErrorAuth && (
+                    <Typography component={"span"}>
+                      {errorAuthPass?.message.substring(10, 50)}
+                    </Typography>
+                  )}
+                </>
+              }
+              error={errorAuthPass !== null}
+            />
+            <Box sx={{ height: "16px" }} />
+            <TextField
+              variant="outlined"
+              label="Confirm password"
+              placeholder="**********"
+              type="password"
+              required
+              name="confirmPassword"
+              error={errorAuthPassConfirm !== null}
+              helperText={
+                <>
+                  {errorAuthPassConfirm !== null && (
+                    <Typography component={"span"}>
+                      {errorAuthPassConfirm.message}
+                    </Typography>
+                  )}
+                </>
+              }
+            />
+            <Box sx={{ height: "16px" }} />
+            <TextField
+              variant="outlined"
+              label="Username"
+              type="text"
+              required
+              name="username"
+              helperText=""
+            />
+            <Box sx={{ height: "16px" }} />
+            <TextField
+              variant="outlined"
+              label="Display name"
+              type="text"
+              required
+              name="displayName"
+              helperText=""
+            />
+            <Box sx={{ height: 32 }}></Box>
 
-              <LoadingButton
-                loading={isLoadingAuth || isLoadingProfile}
-                type="submit"
-                variant="contained"
-              >
-                Create account
-              </LoadingButton>
-            </Stack>
-            <Typography align="center">
-              <small>or</small>
-            </Typography>
-            <Typography align="center">
-              <small>
-                Already have an account? <Link to={"sign-in"}>Sign in</Link>
-              </small>
-            </Typography>
-            <Button onClick={() => {
+            <LoadingButton
+              loading={isLoadingAuth || isLoadingProfile}
+              type="submit"
+              variant="contained"
+            >
+              Create account
+            </LoadingButton>
+          </Stack>
+          <Typography align="center">
+            <small>or</small>
+          </Typography>
+          <Typography align="center">
+            <small>
+              Already have an account? <Link to={"sign-in"}>Sign in</Link>
+            </small>
+          </Typography>
+          <Button
+            onClick={() => {
               dispatch(authActions.getUserIdLogged());
-            }}>Get current user</Button>
-          </form>
+            }}
+          >
+            Get current user
+          </Button>
         </Paper>
-      </Stack>
+      </form>
     </>
   );
 };
