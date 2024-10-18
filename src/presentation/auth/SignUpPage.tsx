@@ -186,7 +186,7 @@ const SignUpPage = () => {
           </Typography>
           <Typography align="center">
             <small>
-              Already have an account? <Link to={"sign-in"}>Sign in</Link>
+              Already have an account? <Link to={"../sign-in"}>Sign in</Link>
             </small>
           </Typography>
           <Button
