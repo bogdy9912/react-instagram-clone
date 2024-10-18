@@ -1,26 +1,34 @@
-import { signUp } from "../data/authService";
+import { getUserIdLogged, signIn, signUp } from "../data/authService";
 import InstaError from "../utils/error";
 import { createAppSlice } from "../redux/createAppSlice";
+import { PayloadAction } from "@reduxjs/toolkit";
 
 interface authState {
   loading: boolean;
   id: string | null;
-  error: InstaError | null;
+  errorEmail: InstaError | null;
+  errorPassword: InstaError | null;
+  errorPasswordConfirm: InstaError | null;
+  errorGeneral: InstaError | null;
+  isError: boolean;
 }
 
 const initialState: authState = {
   id: null,
   loading: false,
-  error: null,
+  errorEmail: null,
+  errorPassword: null,
+  errorPasswordConfirm: null,
+  errorGeneral: null,
+  isError: false,
 };
 
 const authSlice = createAppSlice({
   name: "auth",
   initialState,
   reducers: (create) => ({
-    test: create.reducer((authState, action) => {
-      console.log(action.payload);
-      console.log("DEBUG");
+    getUserIdLogged: create.reducer((state) => {
+      state.id = getUserIdLogged();
     }),
     signUp: create.asyncThunk(
       async (
@@ -36,35 +44,113 @@ const authSlice = createAppSlice({
         thunkApi
       ) => {
         if (confirmPassword !== password) {
-          throw new InstaError("Password does not match", "CONFIRM_PASS_ERR");
+          const error = new InstaError(
+            "Password does not match",
+            "CONFIRM_PASS_ERR"
+          );
+          return thunkApi.rejectWithValue(error.toObject());
         }
         try {
           const id = await signUp(email, password);
           return id;
         } catch (error) {
-          return thunkApi.rejectWithValue(error);
+          return thunkApi.rejectWithValue((error as InstaError).toObject());
         }
       },
       {
         pending: (state) => {
+          state.errorEmail = null;
+          state.errorGeneral = null;
+          state.errorPassword = null;
+          state.errorPasswordConfirm = null;
+          state.isError = false;
           state.loading = true;
         },
         rejected: (state, action) => {
           state.loading = false;
-          state.error = new InstaError(
-            action.error?.message || "",
-            action.error?.code || ""
-          );
+          const error = action.payload as InstaError;
 
-          console.log(
-            "Sign Up Error: rejected: " +
-              action.error.message +
-              action.error.code
-          );
+          if (error.code.includes("pass")) {
+            state.errorPassword = error;
+          } else {
+            state.errorPassword = null;
+          }
+
+          if (error.code.includes("email")) {
+            state.errorEmail = error;
+            state.errorEmail.message = "Email already exists";
+          } else {
+            state.errorEmail = null;
+          }
+          if (error.code === "CONFIRM_PASS_ERR") {
+            state.errorPasswordConfirm = error;
+          } else {
+            state.errorPasswordConfirm = null;
+          }
+          if (
+            state.errorEmail === null &&
+            state.errorPassword === null &&
+            state.errorPasswordConfirm === null
+          ) {
+            state.errorGeneral = error;
+          }
+
+          state.isError = true;
+          console.log("Sign Up Error: rejected: " + action.payload);
         },
         fulfilled: (state, action) => {
-          console.log("FULFILLED SIGN UP");
+          state.errorEmail = null;
+          state.errorGeneral = null;
+          state.errorPassword = null;
+          state.errorPasswordConfirm = null;
+          state.isError = false;
+          state.id = action.payload;
+        },
+      }
+    ),
+    signIn: create.asyncThunk(
+      async (
+        { email, password }: { email: string; password: string },
+        thunkApi
+      ) => {
+        try {
+          return await signIn(email, password);
+        } catch (error) {
+          return thunkApi.rejectWithValue((error as InstaError).toObject());
+        }
+      },
+      {
+        pending: (state) => {
+          state = { ...initialState };
+          state.loading = true;
+        },
+        rejected: (state, action) => {
           state.loading = false;
+          const error = action.payload as InstaError;
+
+          if (error.code?.includes("pass")) {
+            state.errorPassword = error;
+          } else {
+            state.errorPassword = null;
+          }
+
+          if (error.code.includes("email")) {
+            state.errorEmail = error;
+            state.errorEmail.message = "Email already exists";
+          } else {
+            state.errorEmail = null;
+          }
+
+          if (state.errorEmail === null && state.errorPassword === null) {
+            state.errorGeneral = error;
+          }
+
+          state.isError = true;
+        },
+        fulfilled: (state, action) => {
+          console.log("FULFILLED SIGN IN");
+
+          state = { ...initialState };
           state.id = action.payload;
         },
       }

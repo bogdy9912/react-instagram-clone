@@ -2,19 +2,7 @@ import { FormEvent, useState } from "react";
 import { authActions } from "../../slices/authSlice";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  Box,
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  CardHeader,
-  Container,
-  Paper,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Paper, Stack, TextField, Typography } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import { profileActions } from "../../slices/profileSlice";
 
@@ -23,9 +11,17 @@ const SignUpPage = () => {
   const isLoadingAuth = useAppSelector((state) => state.auth.loading);
   const isLoadingProfile = useAppSelector((state) => state.profile.loading);
 
-  const error = useAppSelector((state) => state.auth.error);
+  const errorAuthEmail = useAppSelector((state) => state.auth.errorEmail);
+  const errorAuthPass = useAppSelector((state) => state.auth.errorPassword);
+  const errorAuthPassConfirm = useAppSelector(
+    (state) => state.auth.errorPasswordConfirm
+  );
+  const errorAuth = useAppSelector((state) => state.auth.errorGeneral);
+  const isErrorAuth = useAppSelector((state) => state.auth.isError);
   const [focus, setFocus] = useState(false);
   const navigate = useNavigate();
+
+  const passRules = ["*min 6 chrs", "min 1 capital letter", "min 1 symbol"];
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -44,20 +40,20 @@ const SignUpPage = () => {
         email,
         password,
         confirmPassword,
-        username,
-        displayName,
       })
     ).then((action) => {
-      // trigger set profile
-      console.log("EMIT PROFILE ACTION");
-      const id = action.payload as string | null;
-      console.log("ID is: ", id);
-      dispatch(
-        profileActions.createProfile({ email, username, displayName, id })
-      ).then(() => {
-        // navigate to app
-        navigate("/home");
-      });
+      if (action.type === authActions.signUp.fulfilled.type) {
+        // trigger set profile
+        const id = action.payload as string | null;
+        dispatch(
+          profileActions.createProfile({ email, username, displayName, id })
+        ).then((action) => {
+          if (action.type === profileActions.createProfile.fulfilled.type) {
+            // navigate to app
+            navigate("/");
+          }
+        });
+      }
     });
   };
 
@@ -93,6 +89,16 @@ const SignUpPage = () => {
                 required
                 name="email"
                 type="email"
+                error={errorAuthEmail !== null}
+                helperText={
+                  <>
+                    {errorAuthEmail !== null && (
+                      <Typography component={"span"}>
+                        {errorAuthEmail.message}
+                      </Typography>
+                    )}
+                  </>
+                }
               />
               <Box sx={{ height: "16px" }} />
               <TextField
@@ -105,15 +111,28 @@ const SignUpPage = () => {
                 name="password"
                 helperText={
                   <>
-                    {focus && (
+                    {!isErrorAuth && focus && (
                       <>
-                        <Typography>min 6 chr</Typography>
-                        <Typography>min 1 symbol (eg. ?!*#$,.)</Typography>
+                        {passRules.map((e) => (
+                          <Typography
+                            key={e}
+                            component={"span"}
+                            variant="body2"
+                            sx={{ display: "block" }}
+                          >
+                            {e}
+                          </Typography>
+                        ))}
                       </>
+                    )}
+                    {isErrorAuth && (
+                      <Typography component={"span"}>
+                        {errorAuthPass?.message.substring(10, 50)}
+                      </Typography>
                     )}
                   </>
                 }
-                error={error !== null}
+                error={errorAuthPass !== null}
               />
               <Box sx={{ height: "16px" }} />
               <TextField
@@ -123,7 +142,16 @@ const SignUpPage = () => {
                 type="password"
                 required
                 name="confirmPassword"
-                helperText=""
+                error={errorAuthPassConfirm !== null}
+                helperText={
+                  <>
+                    {errorAuthPassConfirm !== null && (
+                      <Typography component={"span"}>
+                        {errorAuthPassConfirm.message}
+                      </Typography>
+                    )}
+                  </>
+                }
               />
               <Box sx={{ height: "16px" }} />
               <TextField
@@ -158,9 +186,12 @@ const SignUpPage = () => {
             </Typography>
             <Typography align="center">
               <small>
-                Already have an account? <Link to={"./sign-in"}>Sign in</Link>
+                Already have an account? <Link to={"sign-in"}>Sign in</Link>
               </small>
             </Typography>
+            <Button onClick={() => {
+              dispatch(authActions.getUserIdLogged());
+            }}>Get current user</Button>
           </form>
         </Paper>
       </Stack>

@@ -1,7 +1,7 @@
 import { getAnalytics } from "firebase/analytics";
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { Firestore, getFirestore } from "firebase/firestore";
+import { Auth, getAuth, onAuthStateChanged } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_API_KEY ?? "",
@@ -17,7 +17,15 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 
-const firebaseAuth = getAuth(app);
+// create a promise here, to make sure that the auth is fully init
+// when I am calling getUserIdLogged at store creation
+const firebaseAuth: Auth = await new Promise((resolve) => {
+  const auth = getAuth(app);
+  const unsubscribe = onAuthStateChanged(auth, () => {
+    unsubscribe(); // Clean up the listener once we get a response
+    resolve(auth);
+  });
+});
 const firebaseFirestore = getFirestore(app);
 
 export { app, firebaseAuth, analytics, firebaseFirestore };

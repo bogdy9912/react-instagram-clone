@@ -20,20 +20,12 @@ const profileSlice = createAppSlice({
   name: "profile",
   initialState,
   reducers: (create) => ({
-    // createProfile: create.reducer((state, action: PayloadAction<AppUser>) => {
-    //   state.user = action.payload;
-    // }),
     createProfile: create.asyncThunk(
       async (user: AppUser, thunkApi) => {
         try {
           await createProfile(user);
           return user;
         } catch (error) {
-            console.log(error);
-            if (error instanceof InstaError){
-                
-                return thunkApi.rejectWithValue(error.message);
-            }
           return thunkApi.rejectWithValue(error);
         }
       },
@@ -43,16 +35,9 @@ const profileSlice = createAppSlice({
         },
         rejected: (state, action) => {
           state.loading = false;
-          state.error = new InstaError(
-            action.error?.message || "",
-            action.error?.code || ""
-          );
+          state.error = action.payload as InstaError;
 
-          console.log(
-            "Profile Error: rejected: " +
-              action.error.message + " " +
-              action.error.code
-          );
+          console.log("Profile Error: rejected: " + action.payload);
         },
         fulfilled: (state, action) => {
           state.loading = false;
@@ -60,8 +45,8 @@ const profileSlice = createAppSlice({
         },
       }
     ),
-  })
+  }),
 });
 
 export const profileActions = profileSlice.actions;
-export {profileSlice} 
+export { profileSlice };

@@ -7,19 +7,37 @@ import store from "./redux/store.tsx";
 import "./firebase.ts";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import SignUpPage from "./presentation/auth/SignUpPage.tsx";
+import SignInPage from "./presentation/auth/SignInPage.tsx";
+import RootLayout from "./presentation/RootLayout.tsx";
 
 const router = createBrowserRouter([
   {
-    path: '/',
-    element: <SignUpPage/>
-  }
+    path: "/",
+    element: <RootLayout />,
+    children: [
+      {
+        index: true,
+        element: <App/>
+      },
+      {
+        path: "sign-up",
+        element: <SignUpPage />,
+      },
+      {
+        path: 'sign-in',
+        element: <SignInPage/>
+      },
+      {
+        path: 'forgot-password'
+      },
+    ],
+  },
 ]);
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <Provider store={store}>
       <RouterProvider router={router} />
-      {/* <App /> */}
     </Provider>
   </StrictMode>
 );

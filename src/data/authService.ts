@@ -8,6 +8,12 @@ import {
 import InstaError from "../utils/error";
 import { firebaseAuth as auth } from "../firebase";
 
+const getUserIdLogged = (): string | null => {
+  const userId =
+    auth.currentUser?.uid === undefined ? null : auth.currentUser?.uid;
+  return userId;
+};
+
 const signIn = async (email: string, password: string) => {
   let userCredential: UserCredential;
 
@@ -23,7 +29,7 @@ const signIn = async (email: string, password: string) => {
     throw newError;
   }
 
-  return userCredential;
+  return userCredential.user.uid;
 };
 
 const signUp = async (email: string, password: string): Promise<string> => {
@@ -37,11 +43,13 @@ const signUp = async (email: string, password: string): Promise<string> => {
     );
   } catch (error) {
     if (error instanceof FirebaseError) {
+      console.log("ERROR IS FIREBASE ERROR");
+      console.log(error.message);
       const newError = new InstaError(error.message, error.code, 400);
       throw newError;
     }
 
-    const newError = new InstaError("Unexpected error", "", 500);
+    const newError = new InstaError("Unexpected error", "unknown_error", 500);
     throw newError;
   }
 
@@ -56,4 +64,4 @@ const signOut = async () => {
   }
 };
 
-export { signIn, signUp, signOut };
+export { signIn, signUp, signOut, getUserIdLogged };
