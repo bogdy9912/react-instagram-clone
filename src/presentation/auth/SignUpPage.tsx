@@ -51,7 +51,7 @@ const SignUpPage = () => {
     ).then((action) => {
       if (action.type === authActions.signUp.fulfilled.type) {
         // trigger set profile
-        const id = action.payload as string | null;
+        const id = action.payload as string;
         dispatch(
           profileActions.createProfile({ email, username, displayName, id })
         ).then((action) => {
@@ -189,13 +189,6 @@ const SignUpPage = () => {
               Already have an account? <Link to={"../sign-in"}>Sign in</Link>
             </small>
           </Typography>
-          <Button
-            onClick={() => {
-              dispatch(authActions.getUserIdLogged());
-            }}
-          >
-            Get current user
-          </Button>
         </Paper>
       </form>
     </>

@@ -11,7 +11,17 @@ interface profileState {
 }
 
 const initialState: profileState = {
-  user: { email: null, id: null, username: null, displayName: null },
+  user: {
+    email: null,
+    id: null,
+    username: null,
+    displayName: null,
+    noOfPosts: 0,
+    followers: 0,
+    following: [],
+    bio: "",
+    saved: [],
+  },
   error: null,
   loading: false,
 };
@@ -21,10 +31,18 @@ const profileSlice = createAppSlice({
   initialState,
   reducers: (create) => ({
     createProfile: create.asyncThunk(
-      async (user: AppUser, thunkApi) => {
+      async (
+        user: {
+          email: string;
+          username: string;
+          id: string;
+          displayName: string;
+        },
+        thunkApi
+      ) => {
         try {
-          await createProfile(user);
-          return user;
+          const createdUser = await createProfile(user);
+          return createdUser;
         } catch (error) {
           return thunkApi.rejectWithValue(error);
         }

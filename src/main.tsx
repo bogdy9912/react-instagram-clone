@@ -1,6 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import App from "./App.tsx";
+import HomePage from "./presentation/home/HomePage.tsx";
 import "./index.css";
 import { Provider } from "react-redux";
 import store from "./redux/store.tsx";
@@ -16,8 +16,15 @@ const router = createBrowserRouter([
     element: <RootLayout />,
     children: [
       {
-        index: true,
-        element: <App/>
+        // index: true,
+        path: '/',
+        element: <HomePage/>,
+        children: [
+          {
+            path: 'test',
+            element: <><h2>Test</h2></>
+          }
+        ]
       },
       {
         path: "sign-up",
