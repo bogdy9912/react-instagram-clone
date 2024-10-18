@@ -1,14 +1,14 @@
 # Instagram Web clone app with React
 
 ## Setup project
-* [ ] React Router
-* [ ] Redux toolkit
+* [x] React Router
+* [x] Redux toolkit
 
 ## Authentication (Sign in, Sign up, Sign out)
-* [ ] Sign in/up with email & password
+* [x] Sign in/up with email & password
 * [ ] Sign in/up with Google
 * [ ] Reset password
-* [ ] Stay Sign in
+* [x] Stay Sign in
 * [ ] Sign out
 
 ## Add Posts
@@ -19,6 +19,7 @@
 * [ ] Add description(which is the first comment)
 
 ## Feed Page
+  * [x] create responsive menu in the left of the feed
   * [ ] show posts of users that I follow
   * [ ] add comment 
     * [ ] like a comment 
