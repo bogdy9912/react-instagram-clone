@@ -69,7 +69,7 @@ const SignInPage = () => {
             variant="outlined"
             name="password"
             placeholder="******"
-            type={showPassword? "text":"password"}
+            type={showPassword ? "text" : "password"}
             required
             helperText={
               <Typography component={"span"}>

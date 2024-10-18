@@ -2,6 +2,7 @@ import {
   Explore,
   FavoriteBorder,
   Home,
+  Instagram,
   MenuSharp,
   Person,
   PostAdd,
@@ -9,7 +10,8 @@ import {
   Send,
   Slideshow,
 } from "@mui/icons-material";
-import { Box, Button, Stack } from "@mui/material";
+import { Box, Button, IconButton, Stack } from "@mui/material";
+import useScreenSize from "../../../hooks/useScreenSize";
 
 const options = [
   {
@@ -51,6 +53,12 @@ const options = [
 ];
 
 const Menu = () => {
+  const { width } = useScreenSize();
+
+  const displayJustIcons = width < 1024;
+
+  console.log(width);
+
   return (
     <>
       <Stack
@@ -58,31 +66,36 @@ const Menu = () => {
         alignItems={"start"}
         justifyContent={"start"}
         height={"100vh"}
-        paddingLeft={"2rem"}
-        sx={{ width: "20%" }}
+        paddingLeft={"10px"}
+        paddingRight={"10px"}
+        // sx={{ width: "20%" }}
       >
         <Box sx={{ height: "2rem" }}></Box>
         <Button
           variant="text"
           color="inherit"
+          startIcon={<Instagram sx={{ width: "32px", height: "32px" }} />}
           sx={{
-            width: "200px",
+            width: displayJustIcons ? "50px" : "200px",
             justifyContent: "flex-start",
             paddingLeft: "20px",
           }}
         >
-          Instagram
+          {displayJustIcons ? " " : "Instagram"}
         </Button>
         <Box sx={{ height: "2rem" }}></Box>
         {options.map((option) => (
-          <Box key={option.text} sx={{ width: "200px" }}>
+          <Box
+            key={option.text}
+            sx={{ width: displayJustIcons ? "50px" : "200px" }}
+          >
             <Button
               variant="text"
               startIcon={option.icon}
               color="inherit"
               fullWidth
               sx={{
-                justifyContent: "flex-start",
+                justifyContent: displayJustIcons ? "center" : "flex-start",
                 paddingLeft: "20px",
                 paddingTop: "12px",
                 paddingBottom: "12px",
@@ -91,13 +104,13 @@ const Menu = () => {
                 fontSize: "16px",
               }}
             >
-              {option.text}
+              {displayJustIcons ? " " : option.text}
             </Button>
           </Box>
         ))}
         {/* to take all the available space */}
         <Box sx={{ flex: 1 }}></Box>
-        <Box sx={{ width: "200px" }}>
+        <Box sx={{ width: displayJustIcons ? "50px" : "200px" }}>
           <Button
             variant="text"
             startIcon={<MenuSharp sx={{ width: "32px", height: "32px" }} />}
@@ -112,7 +125,7 @@ const Menu = () => {
               fontSize: "16px",
             }}
           >
-            More
+            {displayJustIcons ? " " : "More"}
           </Button>
         </Box>
         <Box height={"1rem"}></Box>
