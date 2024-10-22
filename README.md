@@ -13,6 +13,7 @@
 
 ## Add Posts
 * [ ] Add multiple images from computer
+* [ ] Add images by drag and drop
 * [ ] Add tags
 * [ ] Add persons
 * [ ] Add location

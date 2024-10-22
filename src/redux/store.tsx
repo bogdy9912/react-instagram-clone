@@ -7,8 +7,9 @@ import {
 import { authActions, authSlice } from "../slices/authSlice.ts";
 import { useDispatch, useSelector } from "react-redux";
 import { profileSlice } from "../slices/profileSlice.ts";
+import postsSlice from "../slices/postsSlice.ts";
 
-const rootReducer = combineSlices(authSlice, profileSlice);
+const rootReducer = combineSlices(authSlice, profileSlice, postsSlice);
 
 export type RootState = ReturnType<typeof rootReducer>;
 

@@ -12,55 +12,67 @@ import {
 } from "@mui/icons-material";
 import { Box, Button, IconButton, Stack } from "@mui/material";
 import useScreenSize from "../../../hooks/useScreenSize";
-
-const options = [
-  {
-    icon: <Home sx={{ width: "32px", height: "32px" }} />,
-    text: "Home",
-  },
-  {
-    icon: <Search sx={{ width: "32px", height: "32px" }} />,
-    text: "Search",
-  },
-  {
-    icon: <Explore sx={{ width: "32px", height: "32px" }} />,
-    text: "Explore",
-  },
-  {
-    icon: <Slideshow sx={{ width: "32px", height: "32px" }} />,
-    text: "Reels",
-  },
-  {
-    icon: (
-      <Send
-        sx={{ width: "32px", height: "32px", transform: "rotate(-35deg)" }}
-      />
-    ),
-    text: "Messages",
-  },
-  {
-    icon: <FavoriteBorder sx={{ width: "32px", height: "32px" }} />,
-    text: "Notifications",
-  },
-  {
-    icon: <PostAdd sx={{ width: "32px", height: "32px" }} />,
-    text: "Create",
-  },
-  {
-    icon: <Person sx={{ width: "32px", height: "32px" }} />,
-    text: "Profile",
-  },
-];
+import NewPost from "./NewPost";
+import { useState } from "react";
 
 const Menu = () => {
   const { width } = useScreenSize();
+  const [newPostOpen, setNewPostOpen] = useState(false);
 
   const displayJustIcons = width < 1024;
 
-  console.log(width);
+  const options = [
+    {
+      icon: <Home sx={{ width: "32px", height: "32px" }} />,
+      text: "Home",
+      onClick: () => {},
+    },
+    {
+      icon: <Search sx={{ width: "32px", height: "32px" }} />,
+      text: "Search",
+      onClick: () => {},
+    },
+    {
+      icon: <Explore sx={{ width: "32px", height: "32px" }} />,
+      text: "Explore",
+      onClick: () => {},
+    },
+    {
+      icon: <Slideshow sx={{ width: "32px", height: "32px" }} />,
+      text: "Reels",
+      onClick: () => {},
+    },
+    {
+      icon: (
+        <Send
+          sx={{ width: "32px", height: "32px", transform: "rotate(-35deg)" }}
+        />
+      ),
+      text: "Messages",
+      onClick: () => {},
+    },
+    {
+      icon: <FavoriteBorder sx={{ width: "32px", height: "32px" }} />,
+      text: "Notifications",
+      onClick: () => {},
+    },
+    {
+      icon: <PostAdd sx={{ width: "32px", height: "32px" }} />,
+      text: "Create",
+      onClick: () => {
+        setNewPostOpen(true);
+      },
+    },
+    {
+      icon: <Person sx={{ width: "32px", height: "32px" }} />,
+      text: "Profile",
+      onClick: () => {},
+    },
+  ];
 
   return (
     <>
+      <NewPost open={newPostOpen} setOpen={setNewPostOpen} />
       <Stack
         direction={"column"}
         alignItems={"start"}
@@ -94,6 +106,7 @@ const Menu = () => {
               startIcon={option.icon}
               color="inherit"
               fullWidth
+              onClick={option.onClick}
               sx={{
                 justifyContent: displayJustIcons ? "center" : "flex-start",
                 paddingLeft: "20px",
