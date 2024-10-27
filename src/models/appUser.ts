@@ -7,5 +7,6 @@ export type AppUser = {
   followers: number;
   following: string[];
   bio: string;
-  saved: string[]
+  saved: string[];
+  searchIndex: string[];
 };

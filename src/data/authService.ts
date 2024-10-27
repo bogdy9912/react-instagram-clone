@@ -64,4 +64,5 @@ const signOut = async () => {
   }
 };
 
+
 export { signIn, signUp, signOut, getUserIdLogged };

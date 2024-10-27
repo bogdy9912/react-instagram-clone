@@ -12,11 +12,13 @@ const createPost = async ({
   description,
   location,
   uid,
+  users,
 }: {
   images: FileList;
   description: string;
   location: string;
   uid: string;
+  users: string[]
 }): Promise<void> => {
   const ref = doc(collection(firestore, "posts"));
   const imagesURL = await uploadImages(images, ref.id);
@@ -25,9 +27,9 @@ const createPost = async ({
     images: imagesURL,
     description,
     location,
-    likes: [""],
-    tags: [""],
-    users: [""],
+    likes: [],
+    tags: [],
+    users,
     uid,
     id: ref.id,
   };
@@ -44,8 +46,6 @@ const uploadImages = async (
   for (let i: number = 0; i < images.length; i++) {
     const refFirestore = doc(collection(firestore, "NOT USE"));
     const storageRef = ref(storage, `posts/${id}/${refFirestore.id}`);
-    console.log(images[0]);
-    console.log(await images[0].arrayBuffer());
     const bytes = await images[0].arrayBuffer();
     if (bytes === undefined) {
       throw new InstaError("error on uploading image", "local-error", 500);

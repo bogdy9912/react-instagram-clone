@@ -1,45 +1,25 @@
-import Tab from "@mui/material/Tab";
-import TabContext from "@mui/lab/TabContext";
-import TabList from "@mui/lab/TabList";
-import TabPanel from "@mui/lab/TabPanel";
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
+  Alert,
   Box,
   Button,
-  Container,
   Dialog,
   DialogContent,
   DialogTitle,
-  Grid2,
   IconButton,
-  Input,
   Stack,
   styled,
-  Switch,
-  TextField,
   Typography,
 } from "@mui/material";
-import { SetStateAction, useEffect, useState } from "react";
+import { SetStateAction, useState } from "react";
 import CollectionsIcon from "@mui/icons-material/Collections";
-import { ArrowBack, ExpandMore } from "@mui/icons-material";
-import { Textarea } from "@mui/joy";
-import { useAppDispatch } from "../../../redux/store";
+import { ArrowBack } from "@mui/icons-material";
+
+import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import { postsActions } from "../../../slices/postsSlice";
+import NewPostDetails from "./NewPostDetails";
+import NewPostEdit from "./NewPostEdit";
 
 const steps = ["Create new post", "Crop", "Edit", "Create new post"];
-const filters = [
-  { title: "Filter1" },
-  { title: "Filter2" },
-  { title: "Filter3" },
-  { title: "Filter4" },
-  { title: "Filter5" },
-  { title: "Filter6" },
-  { title: "Filter7" },
-  { title: "Filter8" },
-  { title: "Filter9" },
-];
 
 const NewPost = ({
   open,
@@ -48,33 +28,50 @@ const NewPost = ({
   open: boolean;
   setOpen: React.Dispatch<SetStateAction<boolean>>;
 }) => {
+  const dispatch = useAppDispatch();
   const [files, setFiles] = useState<FileList | null>(null);
   const [selectedFilePreview, setSelectedFilePreview] = useState<any>();
   const [titleIndex, setTitleIndex] = useState(0);
-  const displayButtons = files !== null;
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState("");
-  const dispatch = useAppDispatch();
+  const createPostLoading = useAppSelector(
+    (state) => state.posts.createPostLoading
+  );
+  const createPostError = useAppSelector(
+    (state) => state.posts.createPostError
+  );
+
+  const displayButtons = files !== null;
+  const dialogWidth = titleIndex > 1 ? "1200px" : "800px";
+
+  let sideContent;
+  let content;
 
   const handleClose = () => {
     setOpen(false);
     setFiles(null);
     setTitleIndex(0);
     setSelectedFilePreview(null);
+    dispatch(postsActions.resetCreateError());
   };
 
   const handleShare = () => {
-    if (files === null || titleIndex !== 3){
+    if (files === null || titleIndex !== 3) {
       return;
     }
-    dispatch(postsActions.createPost({description, location, images: files}))
-  }
+    dispatch(
+      postsActions.createPost({ description, location, images: files })
+    ).then((action) => {
+      if (action.type === postsActions.createPost.fulfilled.type) {
+        handleClose();
+      }
+    });
+  };
 
   const handleImagePreview = () => {
     return URL.createObjectURL(selectedFilePreview);
   };
 
-  let content;
   if (files !== null) {
     content = (
       <>
@@ -124,114 +121,19 @@ const NewPost = ({
     );
   }
 
-  let sideContent;
-  const [value, setValue] = useState("1");
-
-  const handleChange = (event: any, newValue: string) => {
-    setValue(newValue);
-  };
-
   if (titleIndex === 2) {
-    sideContent = (
-      <>
-        <Stack sx={{ width: "400px" }}>
-          <TabContext value={value}>
-            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-              <TabList onChange={handleChange}>
-                <Tab label="Filters" value="1" />
-                <Tab label="Adjustments" value="2" />
-              </TabList>
-            </Box>
-            <TabPanel value="1">
-              <Grid2 container spacing={2}>
-                {filters.map((e) => (
-                  <Grid2 size={4}>
-                    <Box
-                      key={e.title}
-                      height={100}
-                      width={100}
-                      sx={{ bgcolor: "blue" }}
-                    >
-                      <Typography>e.title</Typography>
-                    </Box>
-                  </Grid2>
-                ))}
-              </Grid2>
-            </TabPanel>
-            <TabPanel value="2">Item Two</TabPanel>
-          </TabContext>
-        </Stack>
-      </>
-    );
+    sideContent = <NewPostEdit />;
   } else if (titleIndex === 3) {
     sideContent = (
-      <>
-        <Stack sx={{ width: "400px", maxHeight: "500px", overflowY: "scroll" }}>
-          <Textarea
-            sx={{ minHeight: 200 }}
-            onChange={(event) => {
-              setDescription(event.target.value);
-            }}
-            value={description}
-          ></Textarea>
-          <TextField
-            label="Add location"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-          />
-          <TextField label="Add collaborators" />
-          <Accordion>
-            <AccordionSummary expandIcon={<ExpandMore />}>
-              Accessibility
-            </AccordionSummary>
-            <AccordionDetails>
-              <Typography>
-                Alt text describes your photos for people with visual
-                impairments. Alt text will be automatically created for your
-                photos or you can choose to write your own.
-              </Typography>
-              <TextField variant="outlined" placeholder="Not implemented" />
-            </AccordionDetails>
-          </Accordion>
-          <Accordion>
-            <AccordionSummary expandIcon={<ExpandMore />}>
-              Advance settings
-            </AccordionSummary>
-            <AccordionDetails>
-              <Stack
-                direction={"row"}
-                alignItems={"center"}
-                justifyContent={"space-between"}
-              >
-                <Typography>Hide like and view counts on this post</Typography>
-                <Switch />
-              </Stack>
-              <Typography component={"span"} fontSize={10}>
-                Only you will see the total number of likes and views on this
-                post. You can change this later by going to the ··· menu at the
-                top of the post. To hide like counts on other people's posts, go
-                to your account settings.
-              </Typography>
-
-              <Stack
-                direction={"row"}
-                alignItems={"center"}
-                justifyContent={"space-between"}
-              >
-                <Typography>Turn off commenting</Typography>
-                <Switch />
-              </Stack>
-              <Typography component={"span"} fontSize={10}>
-                You can change this later by going to the ··· menu at the top of
-                your post.
-              </Typography>
-            </AccordionDetails>
-          </Accordion>
-        </Stack>
-      </>
+      <NewPostDetails
+        description={description}
+        location={location}
+        setDescription={setDescription}
+        setLocation={setLocation}
+      />
     );
   }
-  const dialogWidth = titleIndex > 1 ? "1200px" : "800px";
+
   return (
     <>
       <Dialog
@@ -258,6 +160,8 @@ const NewPost = ({
                     if (prev === 1) {
                       setFiles(null);
                     }
+
+                    dispatch(postsActions.resetCreateError());
                     return prev - 1;
                   });
                 }}
@@ -265,16 +169,30 @@ const NewPost = ({
                 <ArrowBack />
               </IconButton>
             )}
-            <Typography>{steps[titleIndex]}</Typography>
+            {createPostError === null ? (
+              <Typography>{steps[titleIndex]}</Typography>
+            ) : (
+              <Alert severity="error">{createPostError.message}</Alert>
+            )}
             {displayButtons && (
               <Button
                 variant="text"
+                disabled={createPostLoading}
                 onClick={() => {
-                  setTitleIndex((prev) => prev + 1);
+                  setTitleIndex((prev) => {
+                    if (prev < 3) {
+                      return prev + 1;
+                    }
+                    return prev;
+                  });
                   handleShare();
                 }}
               >
-                {titleIndex === 3 ? "Share" : "Next"}
+                {titleIndex === 3
+                  ? createPostLoading
+                    ? "Sharing..."
+                    : "Share"
+                  : "Next"}
               </Button>
             )}
           </Stack>

@@ -21,6 +21,7 @@ const initialState: profileState = {
     following: [],
     bio: "",
     saved: [],
+    searchIndex: []
   },
   error: null,
   loading: false,

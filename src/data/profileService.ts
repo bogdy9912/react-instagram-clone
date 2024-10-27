@@ -1,6 +1,15 @@
-import { addDoc, doc, setDoc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  query,
+  setDoc,
+  where,
+} from "firebase/firestore";
 import { firebaseFirestore as firestore } from "../firebase";
 import { AppUser } from "../models/appUser";
+import createSearchIndex from "./createSearchIndex";
 
 const createProfile = async (user: {
   email: string;
@@ -9,6 +18,8 @@ const createProfile = async (user: {
   displayName: string;
 }): Promise<AppUser> => {
   const ref = doc(firestore, "users", user.id);
+
+  const searchIndex = createSearchIndex(user.username);
 
   const newUser: AppUser = {
     id: user.id,
@@ -19,11 +30,21 @@ const createProfile = async (user: {
     followers: 0,
     following: [],
     noOfPosts: 0,
-    saved: []
+    saved: [],
+    searchIndex,
   };
 
   await setDoc(ref, newUser);
   return newUser;
 };
 
-export { createProfile };
+const searchUsers = async (searchTerm: string): Promise<string[]> => {
+  const usersRef = collection(firestore, "users");
+  const docRef = query(usersRef, where("searchIndex", "array-contains", searchTerm));
+  const querySnapshot = await getDocs(docRef);
+  const usernames = querySnapshot.docs.map((e) => e.get("username"));
+  console.log(usernames)
+  return usernames;
+};
+
+export { createProfile, searchUsers };
