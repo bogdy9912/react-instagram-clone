@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import { SetStateAction, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
-import { createPostActions } from "../../../slices/postsSlice";
+import { createPostActions } from "../../../slices/createPostSlice";
 
 const NewPostDetails = ({
   description,

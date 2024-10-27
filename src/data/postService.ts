@@ -1,4 +1,12 @@
-import { addDoc, collection, doc, setDoc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  query,
+  setDoc,
+  where,
+} from "firebase/firestore";
 
 import {
   firebaseFirestore as firestore,
@@ -6,6 +14,7 @@ import {
 } from "../firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import InstaError from "../utils/error";
+import Post from "../models/post";
 
 const createPost = async ({
   images,
@@ -18,7 +27,7 @@ const createPost = async ({
   description: string;
   location: string;
   uid: string;
-  users: string[]
+  users: string[];
 }): Promise<void> => {
   const ref = doc(collection(firestore, "posts"));
   const imagesURL = await uploadImages(images, ref.id);
@@ -58,15 +67,29 @@ const uploadImages = async (
   return imagesURL;
 };
 
-type Post = {
-  images: string[];
-  description: string;
-  location: string;
-  likes: string[];
-  tags: string[];
-  uid: string;
-  users: string[];
-  id: string;
+const getFeed = async (following: string[]): Promise<Post[]> => {
+  const approach3Fn = (arr: string[], size: number): string[][] =>
+    arr.reduce(
+      (result: string[][], _, index) =>
+        index % size === 0
+          ? [...result, arr.slice(index, index + size)]
+          : result,
+      []
+    );
+
+  const size = 10;
+  const result = approach3Fn(following, size);
+  const postRef = collection(firestore, "posts");
+
+  let allPosts: Post[] = [];
+  for (let part of result) {
+    const docRef = query(postRef, where("uid", "in", part));
+    const querySnapshot = await getDocs(docRef);
+    const posts = querySnapshot.docs.map((e) => e.data() as Post);
+    allPosts = [...allPosts, ...posts];
+  }
+
+  return allPosts;
 };
 
-export { createPost };
+export { createPost, getFeed };

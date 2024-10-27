@@ -15,7 +15,7 @@ import CollectionsIcon from "@mui/icons-material/Collections";
 import { ArrowBack } from "@mui/icons-material";
 
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
-import { createPostActions } from "../../../slices/postsSlice";
+import { createPostActions } from "../../../slices/createPostSlice";
 import NewPostDetails from "./NewPostDetails";
 import NewPostEdit from "./NewPostEdit";
 

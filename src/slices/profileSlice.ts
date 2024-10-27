@@ -1,13 +1,17 @@
-import { PayloadAction } from "@reduxjs/toolkit";
 import { AppUser } from "../models/appUser";
 import { createAppSlice } from "../redux/createAppSlice";
 import InstaError from "../utils/error";
-import { createProfile } from "../data/profileService";
+import { createProfile, getUserById } from "../data/profileService";
+import { RootState } from "../redux/store";
 
 interface profileState {
   user: AppUser;
   error: InstaError | null;
   loading: boolean;
+
+  users: {
+    [uid: string]: AppUser;
+  };
 }
 
 const initialState: profileState = {
@@ -21,10 +25,11 @@ const initialState: profileState = {
     following: [],
     bio: "",
     saved: [],
-    searchIndex: []
+    searchIndex: [],
   },
   error: null,
   loading: false,
+  users: {},
 };
 
 const profileSlice = createAppSlice({
@@ -55,11 +60,50 @@ const profileSlice = createAppSlice({
         rejected: (state, action) => {
           state.loading = false;
           state.error = action.payload as InstaError;
-
-          console.log("Profile Error: rejected: " + action.payload);
         },
         fulfilled: (state, action) => {
           state.loading = false;
+          state.user = action.payload;
+        },
+      }
+    ),
+    getUser: create.asyncThunk(
+      async (uid: string, thunkApi) => {
+        try {
+          const user = await getUserById(uid);
+          return user;
+        } catch (error) {
+          return thunkApi.rejectWithValue(error as InstaError);
+        }
+      },
+      {
+        pending: (state) => {},
+        rejected: (state, action) => {},
+        fulfilled: (state, action) => {
+          const uid = action.meta.arg;
+          state.users[uid] = action.payload;
+        },
+      }
+    ),
+    getCurrentUser: create.asyncThunk(
+      async (_, thunkApi) => {
+        try {
+          const rootState = thunkApi.getState() as RootState;
+          const uid = rootState.auth.id;
+          if (uid === null) {
+            throw new InstaError("no user logged", "invalid uid", 500);
+          } else {
+            const user = await getUserById(uid);
+            return user;
+          }
+        } catch (error) {
+          return thunkApi.rejectWithValue(error as InstaError);
+        }
+      },
+      {
+        pending: (state) => {},
+        rejected: (state, action) => {},
+        fulfilled: (state, action) => {
           state.user = action.payload;
         },
       }

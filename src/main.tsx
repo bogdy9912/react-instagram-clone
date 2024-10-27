@@ -9,6 +9,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import SignUpPage from "./presentation/auth/SignUpPage.tsx";
 import SignInPage from "./presentation/auth/SignInPage.tsx";
 import RootLayout from "./presentation/RootLayout.tsx";
+import FeedPage from "./presentation/feed/FeedPage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -21,8 +22,8 @@ const router = createBrowserRouter([
         element: <HomePage/>,
         children: [
           {
-            path: 'test',
-            element: <><h2>Test</h2></>
+            index: true,
+            element: <FeedPage/>
           }
         ]
       },

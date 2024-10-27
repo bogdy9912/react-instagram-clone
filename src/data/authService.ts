@@ -43,8 +43,6 @@ const signUp = async (email: string, password: string): Promise<string> => {
     );
   } catch (error) {
     if (error instanceof FirebaseError) {
-      console.log("ERROR IS FIREBASE ERROR");
-      console.log(error.message);
       const newError = new InstaError(error.message, error.code, 400);
       throw newError;
     }
@@ -63,6 +61,5 @@ const signOut = async () => {
     throw new InstaError("Couldn't sign out", "", 500);
   }
 };
-
 
 export { signIn, signUp, signOut, getUserIdLogged };

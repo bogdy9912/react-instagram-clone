@@ -1,7 +1,6 @@
 import { getUserIdLogged, signIn, signUp } from "../data/authService";
 import InstaError from "../utils/error";
 import { createAppSlice } from "../redux/createAppSlice";
-import { PayloadAction } from "@reduxjs/toolkit";
 
 interface authState {
   loading: boolean;
@@ -96,7 +95,6 @@ const authSlice = createAppSlice({
           }
 
           state.isError = true;
-          console.log("Sign Up Error: rejected: " + action.payload);
         },
         fulfilled: (state, action) => {
           state.errorEmail = null;
@@ -148,8 +146,6 @@ const authSlice = createAppSlice({
           state.isError = true;
         },
         fulfilled: (state, action) => {
-          console.log("FULFILLED SIGN IN");
-
           state = { ...initialState };
           state.id = action.payload;
         },

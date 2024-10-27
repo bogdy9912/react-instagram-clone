@@ -16,7 +16,6 @@ function HomePage() {
     <Stack direction={"row"}>
       <Menu/>
       <Divider orientation="vertical" flexItem/>
-      <h1>Logged user: {id}</h1>
       <Outlet/>
     </Stack>
     </>

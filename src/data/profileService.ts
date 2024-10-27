@@ -2,6 +2,7 @@ import {
   addDoc,
   collection,
   doc,
+  getDoc,
   getDocs,
   query,
   setDoc,
@@ -40,11 +41,19 @@ const createProfile = async (user: {
 
 const searchUsers = async (searchTerm: string): Promise<string[]> => {
   const usersRef = collection(firestore, "users");
-  const docRef = query(usersRef, where("searchIndex", "array-contains", searchTerm));
+  const docRef = query(
+    usersRef,
+    where("searchIndex", "array-contains", searchTerm)
+  );
   const querySnapshot = await getDocs(docRef);
   const usernames = querySnapshot.docs.map((e) => e.get("username"));
-  console.log(usernames)
   return usernames;
 };
 
-export { createProfile, searchUsers };
+const getUserById = async (uid: string): Promise<AppUser> => {
+  const ref = doc(firestore, "users", uid);
+  const user: AppUser = (await getDoc(ref)).data() as AppUser;
+  return user;
+};
+
+export { createProfile, searchUsers, getUserById };
