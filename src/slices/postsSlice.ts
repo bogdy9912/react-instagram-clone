@@ -5,7 +5,7 @@ import { createAppSlice } from "../redux/createAppSlice";
 import { RootState } from "../redux/store";
 import InstaError from "../utils/error";
 
-type PostsState = {
+type CreatePostState = {
   createPostLoading: boolean;
   createPostError: InstaError | null;
   searchUserLoading: boolean;
@@ -14,7 +14,7 @@ type PostsState = {
   selectedUsername: string[];
 };
 
-const initialState: PostsState = {
+const initialState: CreatePostState = {
   createPostLoading: false,
   createPostError: null,
   searchUserLoading: false,
@@ -23,8 +23,8 @@ const initialState: PostsState = {
   selectedUsername: [],
 };
 
-const postsSlice = createAppSlice({
-  name: "posts",
+const createPostsSlice = createAppSlice({
+  name: "createPost",
   initialState,
   reducers: (create) => ({
     toggleSelectedUsername: create.reducer(
@@ -55,7 +55,7 @@ const postsSlice = createAppSlice({
         try {
           const rootState: RootState = thunkApi.getState() as RootState;
           const userId: string | null = rootState.auth.id;
-          const users: string[] | null = rootState.posts.selectedUsername;
+          const users: string[] | null = rootState.createPost.selectedUsername;
           if (userId === null) {
             return thunkApi.rejectWithValue(
               new InstaError("access denied", "NO-UID", 500)
@@ -114,6 +114,6 @@ const postsSlice = createAppSlice({
   }),
 });
 
-export default postsSlice;
-export const postsActions = postsSlice.actions;
-export const postsReducer = postsSlice.reducer;
+export default createPostsSlice;
+export const createPostActions = createPostsSlice.actions;
+export const createPostReducer = createPostsSlice.reducer;

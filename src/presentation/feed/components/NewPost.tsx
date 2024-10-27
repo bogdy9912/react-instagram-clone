@@ -15,7 +15,7 @@ import CollectionsIcon from "@mui/icons-material/Collections";
 import { ArrowBack } from "@mui/icons-material";
 
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
-import { postsActions } from "../../../slices/postsSlice";
+import { createPostActions } from "../../../slices/postsSlice";
 import NewPostDetails from "./NewPostDetails";
 import NewPostEdit from "./NewPostEdit";
 
@@ -35,10 +35,10 @@ const NewPost = ({
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState("");
   const createPostLoading = useAppSelector(
-    (state) => state.posts.createPostLoading
+    (state) => state.createPost.createPostLoading
   );
   const createPostError = useAppSelector(
-    (state) => state.posts.createPostError
+    (state) => state.createPost.createPostError
   );
 
   const displayButtons = files !== null;
@@ -52,7 +52,7 @@ const NewPost = ({
     setFiles(null);
     setTitleIndex(0);
     setSelectedFilePreview(null);
-    dispatch(postsActions.resetCreateError());
+    dispatch(createPostActions.resetCreateError());
   };
 
   const handleShare = () => {
@@ -60,9 +60,9 @@ const NewPost = ({
       return;
     }
     dispatch(
-      postsActions.createPost({ description, location, images: files })
+      createPostActions.createPost({ description, location, images: files })
     ).then((action) => {
-      if (action.type === postsActions.createPost.fulfilled.type) {
+      if (action.type === createPostActions.createPost.fulfilled.type) {
         handleClose();
       }
     });
@@ -161,7 +161,7 @@ const NewPost = ({
                       setFiles(null);
                     }
 
-                    dispatch(postsActions.resetCreateError());
+                    dispatch(createPostActions.resetCreateError());
                     return prev - 1;
                   });
                 }}

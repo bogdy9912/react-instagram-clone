@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import { SetStateAction, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
-import { postsActions } from "../../../slices/postsSlice";
+import { createPostActions } from "../../../slices/postsSlice";
 
 const NewPostDetails = ({
   description,
@@ -35,11 +35,11 @@ const NewPostDetails = ({
   const [searchTerm, setSearchTerm] = useState("");
 
   const createPostLoading = useAppSelector(
-    (state) => state.posts.createPostLoading
+    (state) => state.createPost.createPostLoading
   );
-  const usernames = useAppSelector((state) => state.posts.usernames);
+  const usernames = useAppSelector((state) => state.createPost.usernames);
   const selectedUsername = useAppSelector(
-    (state) => state.posts.selectedUsername
+    (state) => state.createPost.selectedUsername
   );
   const dispatch = useAppDispatch();
 
@@ -72,7 +72,7 @@ const NewPostDetails = ({
             if (query) {
               setSearchTerm(query);
               setAnchorElement(e.currentTarget);
-              dispatch(postsActions.searchUsers({ searchTerm: query }));
+              dispatch(createPostActions.searchUsers({ searchTerm: query }));
             } else {
               setSearchTerm(query);
               // setAnchorElement(null);
@@ -86,7 +86,7 @@ const NewPostDetails = ({
                 key={e + "chip"}
                 label={e}
                 onDelete={() => {
-                  dispatch(postsActions.toggleSelectedUsername(e));
+                  dispatch(createPostActions.toggleSelectedUsername(e));
                 }}
               />
             ))}
@@ -159,8 +159,8 @@ const NewPostDetails = ({
               <Button
                 key={e}
                 onClick={() => {
-                  dispatch(postsActions.toggleSelectedUsername(e));
-                  dispatch(postsActions.searchUsers({ searchTerm: "" }));
+                  dispatch(createPostActions.toggleSelectedUsername(e));
+                  dispatch(createPostActions.searchUsers({ searchTerm: "" }));
                   setAnchorElement(null);
                   setSearchTerm("");
                 }}
@@ -168,7 +168,6 @@ const NewPostDetails = ({
                 {e}
               </Button>
             ))}
-            <Typography>THIS IS THE CONTENT</Typography>
           </Paper>
         </Popper>
       </Stack>
